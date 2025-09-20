@@ -6,13 +6,13 @@
 interval=0
 
 # load colors
-. ~/.config/chadwm/scripts/bar_themes/dracula
+. ~/.config/chadwm-boki/scripts/bar_themes/everforest-md
 
 cpu() {
   cpu_val=$(grep -o "^[^ ]*" /proc/loadavg)
 
-  printf "^c$black^ ^b$green^ CPU"
-  printf "^c$white^ ^b$grey^ $cpu_val"
+  printf "^c$white^ "
+  printf "^c$white^ $cpu_val"
 }
 
 pkg_updates() {
@@ -21,9 +21,9 @@ pkg_updates() {
   # updates=$({ timeout 20 aptitude search '~U' 2>/dev/null || true; } | wc -l)  # apt (ubuntu, debian etc)
 
   if [ -z "$updates" ]; then
-    printf "  ^c$green^    Fully Updated"
+    printf "  ^c$orange^   󰮯  Fully Updated"
   else
-    printf "  ^c$green^    $updates"" updates"
+    printf "  ^c$orange^   󰮯  $updates"" updates"
   fi
 }
 
@@ -50,8 +50,12 @@ wlan() {
 }
 
 clock() {
-	printf "^c$black^ ^b$darkblue^ 󱑆 "
-	printf "^c$black^^b$blue^ $(date '+%H:%M')  "
+	printf "^c$darkblue^   "
+	printf "^c$blue^ $(date '+%d/%m/%y') "
+}
+clock2() {
+  printf "^c$darkblue^ 󱑒 "
+  printf "^c$blue^ $(date '+%H:%M')  "
 }
 
 while true; do
@@ -59,6 +63,7 @@ while true; do
   [ $interval = 0 ] || [ $(($interval % 3600)) = 0 ] && updates=$(pkg_updates)
   interval=$((interval + 1))
 
- # sleep 1 && xsetroot -name "$updates $(cpu) $(mem) $(clock)"
- sleep 3 && xsetroot -name "$updates  $(cpu) $(mem) $(clock)"
+#  sleep 3 && xsetroot -name "$updates $(battery) $(brightness) $(cpu) $(mem) $(wlan) $(clock)"
+# sleep 3 && xsetroot -name "$updates  $(cpu) $(mem) $(battery) $(brightness) $(clock) $(clock2)"
+sleep 3 && xsetroot -name "$updates  $(cpu) $(mem) $(clock) $(clock2)"
 done

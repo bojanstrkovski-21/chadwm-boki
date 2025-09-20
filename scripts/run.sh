@@ -17,7 +17,9 @@ function run {
 #run "dex $HOME/.config/autostart/arcolinux-welcome-app.desktop"
 
 #for virtualbox
-run xrandr --output Virtual-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal
+#run xrandr --output Virtual-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal
+
+xrandr --output DP-0 --off --output DP-1 --off --output DP-2 --off --output DP-3 --off --output HDMI-0 --mode 1920x1080 --pos 0x0 --rotate normal --output DP-4 --off --output DP-5 --off
 
 #for real metal
 #run xrandr --output DVI-1 --right-of DVI-0 --auto
@@ -31,29 +33,31 @@ run xrandr --output Virtual-1 --primary --mode 1920x1080 --pos 0x0 --rotate norm
 #run xrandr --output VGA-1 --primary --mode 1360x768 --pos 0x0 --rotate normal
 #autorandr horizontal
 #run "autorandr horizontal"
+run "dunst"
 run "nm-applet"
 #run "pamac-tray"
-run "variety"
-#run "xfce4-power-manager"
-#run "blueberry-tray"
+feh --bg-fill ~/.config/chadwm-boki/wallpaper/chadwm1.jpg &
+variety &
+run "xfce4-power-manager"
+run "blueberry-tray"
 #run "/usr/lib/xfce4/notifyd/xfce4-notifyd"
 run "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-#picom -b  --config ~/.config/arco-chadwm/picom/picom.conf &
+picom -b  --config ~/.config/chadwm-boki/picom/picom.conf &
 #picom &
 run "numlockx on"
 run "volumeicon"
 #run "pa-applet"
-#sxhkd -c ~/.config/arco-chadwm/sxhkd/sxhkdrc &
+sxhkd -c ~/.config/chadwm-boki/sxhkd/sxhkdrc &
 #run "nitrogen --restore"
 #run "conky -c $HOME/.config/arco-chadwm/conky/system-overview"
 #you can set wallpapers in themes as well
 #feh --bg-fill /usr/share/backgrounds/archlinux/arch-wallpaper.jpg &
 #feh --bg-fill /usr/share/backgrounds/arcolinux/arco-wallpaper.jpg &
-#feh --bg-fill ~/.config/arco-chadwm/wallpaper/chadwm1.jpg &
-#feh --bg-fill ~/.config/arco-chadwm/wallpaper/chadwm1.png &
-feh --bg-fill ~/Pictures/kde.png &
-#feh --randomize --bg-fill /home/erik/Insync/Apps/Wallhaven/*
 
+#feh --bg-fill ~/.config/arco-chadwm/wallpaper/chadwm1.png &
+#feh --bg-fill ~/Pictures/kde.png &
+#feh --randomize --bg-fill /home/erik/Insync/Apps/Wallhaven/*
+#/usr/bin/emacs --daemon &
 
 #nitrogen --set-zoom-fill --random /home/erik/Insync/Apps/Desktoppr/ --head=0
 #nitrogen --set-zoom-fill --random /home/erik/Insync/Apps/Desktoppr/ --head=1
@@ -72,5 +76,5 @@ feh --bg-fill ~/Pictures/kde.png &
 
 
 pkill bar.sh
-~/.config/chadwm/scripts/bar.sh &
+~/.config/chadwm-boki/scripts/bar.sh &
 while type chadwm-boki >/dev/null; do chadwm-boki && continue || break; done

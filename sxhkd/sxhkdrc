@@ -6,21 +6,21 @@
 # SUPER + FUNCTION KEYS
 #################################################################
 
-# Vivaldi
+# Firefox
 super + F1
-	vivaldi.vivaldi-stable
+	firefox
 
-# code
+# Brave-browser
 super + F2
-	code
+	brave
 
 #Inkscape
 super + F3
-    inkscape
+    obs
 
 #Gimp
 super + F4
-    gimp
+    blueberry
 
 #Meld
 super + F5
@@ -36,47 +36,51 @@ super + F7
 
 #Thunar
 super + F8
-    thunar
+    virt-manager
 
 #Audio player
 super + F9
-    lollypop
+    kodi
 
 #Spotify
 super + F10
-    spotify
+    /opt/brave-bin/brave --profile-directory=Default --app-id=agimnkijcaahngcdmfeangaknmldooml
 
-#Rofi Fullscreen
+#Rofi Fullscreen rofi -theme-str 'window \{width: 100%;height: 100%;\}' -show drun
 super + F11
-    rofi -theme-str 'window \{width: 100%;height: 100%;\}' -show drun
+    ~/.local/bin/boki-scripts/rofi-scripts-menu.sh
 
 #Rofi
 super + F12
-    rofi -show drun
+    ~/.config/rofi-siduck/apps-launcher.sh
 
 #################################################################
 # SUPER + ... KEYS
 #################################################################
 
-#Atom
+#Sublime-text
 super + e
-    atom
+    subl
 
 #Browser
 super + w
-    vivaldi.vivaldi-stable
+    brave
 
 #Conky-toggle
 super + c
-    conky-toggle
+    qalculate-gtk
 
 #archlinux-logout
 super + x
     archlinux-logout
 
+# Wlogout
+alt + x
+    wlogout -b 2
+
 #powermenu
 super + shift + x
-    arcolinux-powermenu
+    $HOME/.config/powermenu/powermenu.sh
 
 #nlogout
 alt + shift + x
@@ -86,21 +90,26 @@ alt + shift + x
 super + r
     rofi-theme-selector
 
-#Alacritty
+#kitty
 super + t
-    st
+    kitty
+
+#ghostty
+super + shift + t
+    ghostty
 
 #Pavucontrol
 super + v
     pavucontrol
 
-#Pragha
-#super + m
-#    pragha
+#Emacs
+super + shift + e
+    emacsclient -c -a 'emacs'
 
 #alacritty
 super + Return
-    alacritty
+    wezterm
+
 
 #Xkill
 super + Escape
@@ -126,15 +135,15 @@ super + shift + KP_Enter
 
 #dmenu
 super + shift + d
-	dmenu_run -i -nb '#191919' -nf '#fea63c' -sb '#fea63c' -sf '#191919' -fn 'NotoMonoRegular:bold:pixelsize=14'
+	dmenu_run -i -nb '#2d353b' -nf '#d3c6aa' -sb '#a7c080' -sf '#343f44' -fn 'MesloLGS Nerd Font:bold:pixelsize=14'
 
 #dmenu
 super + p
-    dmenu_run -i -nb '#191919' -nf '#fea63c' -sb '#fea63c' -sf '#191919' -fn 'NotoMonoRegular:bold:pixelsize=14'
+    dmenu_run -i -nb '#2d353b' -nf '#d3c6aa' -sb '#a7c080' -sf '#343f44' -fn 'MesloLGS Nerd Font:bold:pixelsize=14'
 
-#rofi large
+#rofi large #rofi -no-config -no-lazy-grab -show drun -modi drun -theme $HOME/.config/chadwm-boki/rofi/launcher2.rasi
 super + d
-    rofi -no-config -no-lazy-grab -show drun -modi drun -theme ~/.config/arco-chadwm/rofi/launcher2.rasi
+    ~/.config/launcher-aditaya/files/launchers/type-4/launcher.sh
 
 #reload sxhkd:
 super + shift + s
@@ -178,7 +187,7 @@ ctrl + alt + g
     chromium -no-default-browser-check
 
 #Firefox
-ctrl + alt + f
+super + shift + w
      firefox
 
 #Nitrogen
@@ -223,7 +232,7 @@ ctrl + alt + t
 
 #Vivaldi
 ctrl + alt + v
-    vivaldi.vivaldi-stable
+    vivaldi-stable
 
 #Xfce4-appfinder
 ctrl + alt + a
@@ -410,4 +419,20 @@ XF86MonBrightnessDown
 
 #Picom Toggle
 ctrl + alt + o
-    ~/.config/arco-chadwm/scripts/picom-toggle.sh
+    ~/.config/chadwm-boki/scripts/picom-toggle.sh
+
+# change volume up
+super + shift + n
+    ~/.bin/changevolume up
+
+# change volume down
+super + shift + m
+    ~/.bin/changevolume down
+
+# change volume down
+super + shift + v
+    ~/.bin/changevolume mute
+
+#Toggle keyboard layout
+ctrl + m
+      ~/.bin/kbd-layout-toggle.sh

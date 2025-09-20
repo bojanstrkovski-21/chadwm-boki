@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-sudo make clean
+make clean
 
 make
 
