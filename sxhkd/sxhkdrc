@@ -134,7 +134,7 @@ super + shift + KP_Enter
 	thunar
 
 #dmenu
-super + shift + d
+alt + shift + d
 	dmenu_run -i -nb '#2d353b' -nf '#d3c6aa' -sb '#a7c080' -sf '#343f44' -fn 'MesloLGS Nerd Font:bold:pixelsize=14'
 
 #dmenu
@@ -143,7 +143,15 @@ super + p
 
 #rofi large #rofi -no-config -no-lazy-grab -show drun -modi drun -theme $HOME/.config/chadwm-boki/rofi/launcher2.rasi
 super + d
-    ~/.config/launcher-aditaya/files/launchers/type-4/launcher.sh
+    rofi -show drun -i -theme ~/.config/rofi/everforest-center.rasi
+    #~/.config/launcher-aditaya/files/launchers/type-4/launcher.sh
+
+#rofi-arch-boki-menu
+alt + d
+    ~/.config/rofi/rofi-binoymanoj/scripts/main-menu.sh
+# rofi-center
+super + shift + d
+    rofi -show drun -i -theme ~/.config/rofi/everforest-sidebar.rasi
 
 #reload sxhkd:
 super + shift + s
@@ -202,9 +210,11 @@ ctrl + alt + k
 ctrl + alt + l
     archlinux-logout
 
-#Pamac-manager
+#Arch-Boki-Post-Install TUI
 ctrl + alt + p
-    pamac-manager
+    /usr/bin/ghostty -e ~/.local/bin/arch-boki-post-install
+
+#setsid kitty -e pacsea >/dev/null 2>&1 &
 
 #Xfce4-settings-manager
 ctrl + alt + m
@@ -342,7 +352,7 @@ ctrl + Print
 
 #Gnome-Screenshot
 ctrl + shift + Print
-     gnome-screenshot -i
+     flameshot screen -p ~/Pictures/
 
 #flameshot
 ctrl + super + Print
@@ -429,7 +439,7 @@ super + shift + n
 super + shift + m
     ~/.bin/changevolume down
 
-# change volume down
+# mute volume
 super + shift + v
     ~/.bin/changevolume mute
 

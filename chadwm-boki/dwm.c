@@ -2922,7 +2922,7 @@ void setup(void) {
       XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION", False);
   netatom[NetSystemTrayOrientationHorz] =
       XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION_HORZ", False);
-  netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
+  netatom[NetWMName] = XInternAtom(dpy, "WM_CLASS", False);
  	netatom[NetWMIcon] = XInternAtom(dpy, "_NET_WM_ICON", False);
   netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
   netatom[NetWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);

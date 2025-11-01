@@ -19,8 +19,9 @@ function run {
 #for virtualbox
 #run xrandr --output Virtual-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal
 
+#xrandr --output eDP1 --mode 1366x768 --pos 0x0 --rotate normal --output HDMI1 --off --output VIRTUAL1 --off
 xrandr --output DP-0 --off --output DP-1 --off --output DP-2 --off --output DP-3 --off --output HDMI-0 --mode 1920x1080 --pos 0x0 --rotate normal --output DP-4 --off --output DP-5 --off
-
+run "dunst"
 #for real metal
 #run xrandr --output DVI-1 --right-of DVI-0 --auto
 #run xrandr --output DVI-D-0 --off --output HDMI-0 --mode 1920x1080 --pos 0x0 --rotate normal --output DP-0 --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output None-1-1 --off
@@ -33,7 +34,6 @@ xrandr --output DP-0 --off --output DP-1 --off --output DP-2 --off --output DP-3
 #run xrandr --output VGA-1 --primary --mode 1360x768 --pos 0x0 --rotate normal
 #autorandr horizontal
 #run "autorandr horizontal"
-run "dunst"
 run "nm-applet"
 #run "pamac-tray"
 feh --bg-fill ~/.config/chadwm-boki/wallpaper/chadwm1.jpg &
@@ -45,7 +45,7 @@ run "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 picom -b  --config ~/.config/chadwm-boki/picom/picom.conf &
 #picom &
 run "numlockx on"
-run "volumeicon"
+#run "volumeicon"
 #run "pa-applet"
 sxhkd -c ~/.config/chadwm-boki/sxhkd/sxhkdrc &
 #run "nitrogen --restore"
@@ -55,9 +55,8 @@ sxhkd -c ~/.config/chadwm-boki/sxhkd/sxhkdrc &
 #feh --bg-fill /usr/share/backgrounds/arcolinux/arco-wallpaper.jpg &
 
 #feh --bg-fill ~/.config/arco-chadwm/wallpaper/chadwm1.png &
-#feh --bg-fill ~/Pictures/kde.png &
 #feh --randomize --bg-fill /home/erik/Insync/Apps/Wallhaven/*
-#/usr/bin/emacs --daemon &
+/usr/bin/emacs --daemon &
 
 #nitrogen --set-zoom-fill --random /home/erik/Insync/Apps/Desktoppr/ --head=0
 #nitrogen --set-zoom-fill --random /home/erik/Insync/Apps/Desktoppr/ --head=1

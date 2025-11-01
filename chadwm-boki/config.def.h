@@ -6,10 +6,10 @@
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
 static const unsigned int default_border = 0;   /* to switch back to default border after dynamic border resizing via keybinds */
 static const unsigned int snap      = 32;       /* snap pixel */
-static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
-static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
-static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
+static const unsigned int gappih    = 4;       /* horiz inner gap between windows */
+static const unsigned int gappiv    = 4;       /* vert inner gap between windows */
+static const unsigned int gappoh    = 4;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 4;       /* vert outer gap between windows and screen edge */
 static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
@@ -37,7 +37,7 @@ static const int new_window_attach_on_end = 0; /*  1 means the new window will a
 #define ICONSIZE 19   /* icon size */
 #define ICONSPACING 8 /* space between icon and title */
 
-static const char *fonts[]          = {"MesloLGS Nerd Font Propo:style:bold:size=14","JetBrainsMono Nerd Font Mono:style:medium:size=19" };
+static const char *fonts[]          = {"MesloLGS Nerd Font Propo:style:medium:size=13","JetBrainsMono Nerd Font Propo:style:medium:size=13" };
 
 // theme
 #include "themes/everforest-md.h"
@@ -65,7 +65,8 @@ static const char *colors[][3]      = {
 //static char *tags[] = {"", "", "", "", ""};
 static char *tags[] = {"", "", "", "", ""};
 
-static const char* eww[] = { "rofi", "-show", "drun", "-theme", ".config/rofi-christitustech/config.rasi", NULL };
+//static const char* eww[] = { "rofi", "-show", "drun", "-theme", ".config/rofi-christitustech/config.rasi", NULL };
+static const char* eww[] = { "eww", "open" , "eww", NULL };
 static const char* firefox[] = { "firefox", NULL };
 static const char* thunar[] = { "thunar", NULL };
 static const char* kitty[] = { "kitty", NULL };
@@ -105,6 +106,7 @@ static const Rule rules[] = {
     { "Nlogout",       NULL,       NULL,       0,            1,           1,           -1 },
     { "Blueberry.py",  NULL,       NULL,       0,            1,           1,           -1 },
     { "wlogout",       NULL,       NULL,       0,            1,           1,           -1 },
+    { "kitty",         NULL,       NULL,       0,            0,           0,           -1 },
 };
 
 /* layout(s) */
@@ -146,6 +148,8 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+
+#define STATUSBAR "dwmblocks"
 
 /* commands */
 
@@ -289,15 +293,13 @@ static const Button buttons[] = {
     * into a floating position).
     { ClkClientWin,         ControlMask,    Button1,        dragmfact,      {0} },
     */
-    { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-    //{ ClkClientWin,         ControlMask,    Button1,        dragmfact,      {0} },
-    //{ ClkClientWin,         ControlMask,    Button3,        dragcfact,      {0} },
+    { ClkClientWin,         ControlMask,    Button3,        dragcfact,      {0} },
     { ClkTagBar,            0,              Button1,        view,           {0} },
     { ClkTagBar,            0,              Button3,        toggleview,     {0} },
-    //{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
-    //{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
+    { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
+    { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
     { ClkTabBar,            0,              Button1,        focuswin,       {0} },
     { ClkTabBar,            0,              Button1,        focuswin,       {0} },
     { ClkTabPrev,           0,              Button1,        movestack,      { .i = -1 } },
