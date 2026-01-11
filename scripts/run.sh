@@ -37,9 +37,9 @@ run "dunst"
 run "nm-applet"
 #run "pamac-tray"
 feh --bg-fill ~/.config/chadwm-boki/wallpaper/chadwm1.jpg &
-variety &
+run "variety"
 run "xfce4-power-manager"
-run "blueberry-tray"
+run "blueman-applet"
 #run "/usr/lib/xfce4/notifyd/xfce4-notifyd"
 run "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 picom -b  --config ~/.config/chadwm-boki/picom/picom.conf &
@@ -57,7 +57,9 @@ sxhkd -c ~/.config/chadwm-boki/sxhkd/sxhkdrc &
 #feh --bg-fill ~/.config/arco-chadwm/wallpaper/chadwm1.png &
 #feh --randomize --bg-fill /home/erik/Insync/Apps/Wallhaven/*
 /usr/bin/emacs --daemon &
-
+xset s off
+xset s noblank
+xset -dpms
 #nitrogen --set-zoom-fill --random /home/erik/Insync/Apps/Desktoppr/ --head=0
 #nitrogen --set-zoom-fill --random /home/erik/Insync/Apps/Desktoppr/ --head=1
 
@@ -76,4 +78,14 @@ sxhkd -c ~/.config/chadwm-boki/sxhkd/sxhkdrc &
 
 pkill bar.sh
 ~/.config/chadwm-boki/scripts/bar.sh &
-while type chadwm-boki >/dev/null; do chadwm-boki && continue || break; done
+# while type chadwm-boki >/dev/null; do chadwm-boki && continue || break; done
+while true; do
+    # Kill and restart tray apps on each dwm restart
+    killall nm-applet blueman-applet variety 2>/dev/null
+    run "nm-applet"
+    run "blueman-applet"
+    run "variety"
+    
+    # Run dwm
+    chadwm-boki || break
+done

@@ -20,7 +20,7 @@ super + F3
 
 #Gimp
 super + F4
-    blueberry
+    blueman-manager
 
 #Meld
 super + F5
@@ -52,7 +52,9 @@ super + F11
 
 #Rofi
 super + F12
-    ~/.config/rofi-siduck/apps-launcher.sh
+    ~/.local/bin/archboki-launcher
+    #rofi -show drun -i -theme ~/.config/rofi/everforest-center.rasi
+#  ~/.config/rofi-siduck/apps-launcher.sh
 
 #################################################################
 # SUPER + ... KEYS
@@ -144,6 +146,7 @@ super + p
 #rofi large #rofi -no-config -no-lazy-grab -show drun -modi drun -theme $HOME/.config/chadwm-boki/rofi/launcher2.rasi
 super + d
     rofi -show drun -i -theme ~/.config/rofi/everforest-center.rasi
+    #~/.local/bin/archboki-launcher
     #~/.config/launcher-aditaya/files/launchers/type-4/launcher.sh
 
 #rofi-arch-boki-menu
