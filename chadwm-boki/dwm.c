@@ -2087,6 +2087,22 @@ void manage(Window w, XWindowAttributes *wa) {
     c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
     c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
   }
+  if (c->iscentered) {
+  c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
+  c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
+}
+
+/* Custom geometry for blueman-manager */
+XClassHint ch = {NULL, NULL};
+XGetClassHint(dpy, c->win, &ch);
+if (ch.res_class && strcmp(ch.res_class, "Blueman-manager") == 0) {
+  c->w = 600;  // width in pixels
+  c->h = 400;  // height in pixels
+  c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;  // center horizontally
+  c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;  // center vertically
+}
+if (ch.res_class) XFree(ch.res_class);
+if (ch.res_name) XFree(ch.res_name);
   XSelectInput(dpy, w,
                EnterWindowMask | FocusChangeMask | PropertyChangeMask |
                    StructureNotifyMask);
@@ -3546,26 +3562,24 @@ void updatestatus(void) {
   updatesystray();
 }
 
-void updatesystrayicongeom(Client *i, int w, int h) {
+void
+updatesystrayicongeom(Client *i, int w, int h) {
   int rh = bh - vertpadbar;
-  if (i) {
+
+  if (!i)
+    return;
+
+  applysizehints(i, &(i->x), &(i->y), &(i->w), &(i->h), False);
+
+  if (systrayiconsize >= rh) {
+    i->w = rh;
     i->h = rh;
-    if (w == h)
-      i->w = rh;
-    else if (h == rh)
-      i->w = w;
-    else
-      i->w = (int)((float)rh * ((float)w / (float)h));
     i->y = i->y + vertpadbar / 2;
-    applysizehints(i, &(i->x), &(i->y), &(i->w), &(i->h), False);
-    /* force icons into the systray dimensions if they don't want to */
-    if (i->h > rh) {
-      if (i->w == i->h)
-        i->w = rh;
-      else
-        i->w = (int)((float)rh * ((float)i->w / (float)i->h));
-      i->h = rh;
-    }
+  } else {
+    i->w = systrayiconsize;
+    i->h = systrayiconsize;
+    /* center icons vertically if smaller than bar */
+    i->y = (rh - systrayiconsize) / 2 + vertpadbar;
   }
 }
 
@@ -3638,7 +3652,11 @@ void updatesystray(void) {
     XMapRaised(dpy, i->win);
     w += systrayspacing;
     i->x = w;
-    XMoveResizeWindow(dpy, i->win, i->x, vertpadbar / 2, i->w, i->h);
+    if (systrayiconsize >= bh)
+    i->y = 0;
+    else
+    i->y = (bh - systrayiconsize) / 2;
+    XMoveResizeWindow(dpy, i->win, i->x, i->y, i->w, i->h);
     w += i->w;
     if (i->mon != m)
       i->mon = m;
