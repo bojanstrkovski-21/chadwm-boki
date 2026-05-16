@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+cd ~/.config/chadwm-boki/chadwm-boki/
+
+sudo rm config.h
+make clean
+
+make
+
+sudo make clean install
+
+sudo rm config.h

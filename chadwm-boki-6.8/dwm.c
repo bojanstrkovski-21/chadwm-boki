@@ -269,6 +269,7 @@ static Atom getatomprop(Client *c, Atom prop);
 static Picture geticonprop(Window w, unsigned int *icw, unsigned int *ich);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
+static pid_t getstatusbarpid();
 static unsigned int getsystraywidth();
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
@@ -320,6 +321,7 @@ static void seturgent(Client *c, int urg);
 static void show(Client *c);
 static void showhide(Client *c);
 static void showtagpreview(int tag);
+static void sigstatusbar(const Arg *arg);
 static void spawn(const Arg *arg);
 static void switchtag(void);
 static Monitor *systraytomon(Monitor *m);
@@ -366,6 +368,9 @@ static void zoom(const Arg *arg);
 static Systray *systray = NULL;
 static const char broken[] = "broken";
 static char stext[1024];
+static int statussig;
+static int statusw;
+static pid_t statuspid = -1;
 static int screen;
 static int sw, sh;      /* X display screen geometry width, height */
 static int bh;          /* bar height */
@@ -650,9 +655,34 @@ void buttonpress(XEvent *e) {
 			}
 	}
 
-  if (ev->x > selmon->ww - (int)TEXTW(stext))
+  if (ev->x > selmon->ww - statusw - (int)getsystraywidth()) {
+         x = selmon->ww - statusw - (int)getsystraywidth();
          click = ClkStatusText;
-  else
+
+         char *text, *s, ch;
+         statussig = 0;
+         for (text = s = stext; *s && x <= ev->x; s++) {
+             if ((unsigned char)(*s) < ' ') {
+                 ch = *s;
+                 *s = '\0';
+                 x += TEXTW(text) - lrpad;
+                 *s = ch;
+                 text = s + 1;
+                 if (x >= ev->x)
+                     break;
+                 statussig = ch;
+             } else if (*s == '^') {
+                 *s = '\0';
+                 x += TEXTW(text) - lrpad;
+                 *s = '^';
+                 if (*(++s) == 'f')
+                     x += atoi(++s);
+                 while (*(s++) != '^');
+                 text = s;
+                 s--;
+             }
+         }
+  } else
          click = ClkWinTitle;
   }
     	
@@ -1043,7 +1073,7 @@ Monitor *dirtomon(int dir) {
 }
 
 int drawstatusbar(Monitor *m, int bh, char *stext) {
-  int ret, i, w, x, len;
+  int ret, i, j, w, x, len;
   short isCode = 0;
   char *text;
   char *p;
@@ -1052,7 +1082,12 @@ int drawstatusbar(Monitor *m, int bh, char *stext) {
   if (!(text = (char *)malloc(sizeof(char) * len)))
     die("malloc");
   p = text;
-  memcpy(text, stext, len);
+
+  i = -1, j = 0;
+  while (stext[++i])
+    if ((unsigned char)stext[i] >= ' ')
+      text[j++] = stext[i];
+  text[j] = '\0';
 
   /* compute width of the status text */
   w = 0;
@@ -1486,7 +1521,7 @@ void drawbar(Monitor *m) {
 
   /* draw status first so it can be overdrawn by tags later */
   if (m == selmon) { /* status is only drawn on selected monitor */
-    sw = mw - drawstatusbar(m, bh_n, stext);
+    sw = statusw = m->ww - drawstatusbar(m, bh_n, stext);
   }
 
   resizebarwin(m);
@@ -1862,12 +1897,36 @@ long getstate(Window w) {
 
   if (XGetWindowProperty(dpy, w, wmatom[WMState], 0L, 2L, False,
                          wmatom[WMState], &real, &format, &n, &extra,
-                         (unsigned char **)&p) != Success)
+                         &p) != Success)
     return -1;
-  if (n != 0)
-    result = *p;
+  if (n != 0 && format == 32)
+    result = *(long *)p;
   XFree(p);
   return result;
+}
+
+pid_t
+getstatusbarpid()
+{
+	char buf[32], *str = buf, *c;
+	FILE *fp;
+
+	if (statuspid > 0) {
+		snprintf(buf, sizeof(buf), "/proc/%u/cmdline", statuspid);
+		if ((fp = fopen(buf, "r"))) {
+			fgets(buf, sizeof(buf), fp);
+			while ((c = strchr(str, '/')))
+				str = c + 1;
+			fclose(fp);
+			if (!strcmp(str, STATUSBAR))
+				return statuspid;
+		}
+	}
+	if (!(fp = popen("pidof -s "STATUSBAR, "r")))
+		return -1;
+	fgets(buf, sizeof(buf), fp);
+	pclose(fp);
+	return strtoul(buf, NULL, 10);
 }
 
 unsigned int getsystraywidth() {
@@ -2267,7 +2326,7 @@ void movemouse(const Arg *arg) {
       handler[ev.type](&ev);
       break;
     case MotionNotify:
-      if ((ev.xmotion.time - lasttime) <= (1000 / 60))
+      if ((ev.xmotion.time - lasttime) <= (1000 / refreshrate))
         continue;
       lasttime = ev.xmotion.time;
 
@@ -2607,7 +2666,7 @@ void resizemouse(const Arg *arg) {
       handler[ev.type](&ev);
       break;
     case MotionNotify:
-      if ((ev.xmotion.time - lasttime) <= (1000 / 60))
+      if ((ev.xmotion.time - lasttime) <= (1000 / refreshrate))
         continue;
       lasttime = ev.xmotion.time;
 
@@ -2719,6 +2778,8 @@ void sendmon(Client *c, Monitor *m) {
   attach(c);
   attachstack(c);
   setclienttagprop(c);
+  if (c->isfullscreen)
+    resizeclient(c, m->mx, m->my, m->mw, m->mh);
   focus(NULL);
   arrange(NULL);
 }
@@ -2813,11 +2874,10 @@ setnumdesktops(void){
 }
 
 void setfocus(Client *c) {
-  if (!c->neverfocus) {
+  if (!c->neverfocus)
     XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
-    XChangeProperty(dpy, root, netatom[NetActiveWindow], XA_WINDOW, 32,
-                    PropModeReplace, (unsigned char *)&(c->win), 1);
-  }
+  XChangeProperty(dpy, root, netatom[NetActiveWindow], XA_WINDOW, 32,
+                  PropModeReplace, (unsigned char *)&(c->win), 1);
   sendevent(c->win, wmatom[WMTakeFocus], NoEventMask, wmatom[WMTakeFocus],
             CurrentTime, 0, 0, 0);
 }
@@ -3064,6 +3124,19 @@ showtagpreview(int tag)
 		XUnmapWindow(dpy, selmon->tagwin);
 }
 
+void
+sigstatusbar(const Arg *arg)
+{
+	union sigval sv;
+
+	if (!statussig)
+		return;
+	sv.sival_int = arg->i;
+	if ((statuspid = getstatusbarpid()) <= 0)
+		return;
+
+	sigqueue(statuspid, SIGRTMIN+statussig, sv);
+}
 
 void spawn(const Arg *arg) {
   struct sigaction sa;

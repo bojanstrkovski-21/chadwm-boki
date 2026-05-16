@@ -6,6 +6,7 @@
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
 static const unsigned int default_border = 0;   /* to switch back to default border after dynamic border resizing via keybinds */
 static const unsigned int snap      = 32;       /* snap pixel */
+static const int refreshrate        = 60;       /* refresh rate (per second) for client move/resize */
 static const unsigned int gappih    = 4;       /* horiz inner gap between windows */
 static const unsigned int gappiv    = 4;       /* vert inner gap between windows */
 static const unsigned int gappoh    = 4;       /* horiz outer gap between windows and screen edge */
@@ -29,9 +30,9 @@ static const int horizpadtabo       = 15;
 static const int scalepreview       = 4;
 static const int tag_preview        = 0;        /* 1 means enable, 0 is off */
 static const int colorfultag        = 1;        /* 0 means use SchemeSel for selected non vacant tag */
-static const char *upvol[]   = { "/usr/bin/pactl", "set-sink-volume", "0", "+5%",     NULL };
-static const char *downvol[] = { "/usr/bin/pactl", "set-sink-volume", "0", "-5%",     NULL };
-static const char *mutevol[] = { "/usr/bin/pactl", "set-sink-mute",   "0", "toggle",  NULL };
+static const char *upvol[]   = { "/bin/sh", "-c", "/usr/bin/pactl set-sink-volume 0 +5% && pkill -RTMIN+2 dwmblocks",  NULL };
+static const char *downvol[] = { "/bin/sh", "-c", "/usr/bin/pactl set-sink-volume 0 -5% && pkill -RTMIN+2 dwmblocks",  NULL };
+static const char *mutevol[] = { "/bin/sh", "-c", "/usr/bin/pactl set-sink-mute 0 toggle && pkill -RTMIN+2 dwmblocks",    NULL };
 static const char *light_up[] = {"/usr/bin/light", "-A", "5", NULL};
 static const char *light_down[] = {"/usr/bin/light", "-U", "5", NULL};
 static const int new_window_attach_on_end = 0; /*  1 means the new window will attach on the end; 0 means the new window will attach on the front,default is front */
@@ -41,7 +42,9 @@ static const int new_window_attach_on_end = 0; /*  1 means the new window will a
 static const char *fonts[]          = {"MesloLGS Nerd Font Propo:style:medium:size=13","JetBrainsMono Nerd Font Propo:style:medium:size=13" };
 
 // theme
-#include "themes/everforest-md.h"
+#include "themes/starwars-1.h"
+//#include "themes/bright.h"
+//#include "themes/everforest-md.h"
 
 static const char *colors[][3]      = {
     /*                     fg       bg      border */
@@ -67,7 +70,7 @@ static const char *colors[][3]      = {
 static char *tags[] = {"", "", "", "", ""};
 
 //static const char* eww[] = { "rofi", "-show", "drun", "-theme", ".config/rofi-christitustech/config.rasi", NULL };
-static const char* eww[] = { "eww", "open" , "eww", NULL };
+static const char* eww[] = { "eww", "open" , "app-dock", NULL };
 static const char* firefox[] = { "firefox", NULL };
 static const char* thunar[] = { "thunar", NULL };
 static const char* kitty[] = { "kitty", NULL };
@@ -98,18 +101,20 @@ static const Rule rules[] = {
      *	WM_CLASS(STRING) = instance, class
      *	WM_NAME(STRING) = title
      */
-    /* class                      instance    title       tags mask     iscentered   isfloating   monitor */
-    { "Gimp",                      NULL,       NULL,       0,            1,           1,           -1 },
-    { "Firefox",                   NULL,       NULL,       1 << 8,       0,           0,           -1 },
-    { "Galculator",                NULL,       NULL,       0,            1,           1,           -1 },
-    { "Qalculate-gtk",             NULL,       NULL,       0,            1,           1,           -1 },
-    { "ghostty",                   NULL,       NULL,       0,            1,           1,           -1 },
-    { "Nlogout",                   NULL,       NULL,       0,            1,           1,           -1 },
-    { "Blueman-manager",           NULL,       NULL,       0,            1,           1,           -1 },
-    { "wlogout",                   NULL,       NULL,       0,            1,           1,           -1 },
-    { "kitty",                     NULL,       NULL,       0,            0,           0,           -1 },
-    { "launcher",                  NULL,       NULL,       0,            1,           1,           -1 },
-    { "Launcher_gtk.py",           NULL,       NULL,       0,            1,           1,           -1 },
+    /* class                                instance    title       tags mask     iscentered   isfloating   monitor */
+    { "Gimp",                                NULL,       NULL,       0,            1,           1,           -1 },
+    { "Firefox",                             NULL,       NULL,       1 << 8,       0,           0,           -1 },
+    { "Galculator",                          NULL,       NULL,       0,            1,           1,           -1 },
+    { "Qalculate-gtk",                       NULL,       NULL,       0,            1,           1,           -1 },
+    { "ghostty",                             NULL,       NULL,       0,            1,           1,           -1 },
+    { "Nlogout",                             NULL,       NULL,       0,            1,           1,           -1 },
+    { "Blueman-manager",                     NULL,       NULL,       0,            1,           1,           -1 },
+    { "Eww",                                 NULL,       NULL,       0,            1,           1,           -1 },
+    { "wlogout",                             NULL,       NULL,       0,            1,           1,           -1 },
+    { "kitty",                               NULL,       NULL,       0,            0,           0,           -1 },
+    { "launcher",                            NULL,       NULL,       0,            1,           1,           -1 },
+    { "Launcher_gtk.py",                     NULL,       NULL,       0,            1,           1,           -1 },
+    { "Arch-Boki \xe2\x80\x94 Keybindings",  NULL,       NULL,       0,            1,           1,           -1 },
 };
 
 /* layout(s) */
@@ -140,6 +145,9 @@ static const Layout layouts[] = {
     { "><>",      NULL },    /* no layout function means floating behavior */
     { NULL,       NULL },
 };
+
+
+//static void quit(const Arg *arg);
 
 /* key definitions */
 #define MODKEY Mod4Mask
@@ -250,13 +258,13 @@ static const Key keys[] = {
     { MODKEY|ShiftMask,                 XK_b,       setborderpx,    {.i = default_border } },
 
     // kill dwm
-    { MODKEY|ControlMask,               XK_q,       spawn,        SHCMD("killall bar.sh chadwm-boki") },
+    { MODKEY|ControlMask,               XK_q,       spawn,        SHCMD("killall dwmblocks chadwm-boki") },
 
     // kill window
     { MODKEY,                           XK_q,       killclient,     {0} },
 
     // restart
-    { MODKEY|ShiftMask,                 XK_r,       quit,           {0} },
+    //{ MODKEY|ShiftMask,                 XK_q,       quit,           {0} },
 
     // hide & restore windows
     //{ MODKEY,                           XK_e,       hidewin,        {0} },
@@ -280,7 +288,9 @@ static const Button buttons[] = {
     { ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
     { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
     { ClkWinTitle,          0,              Button2,        zoom,           {0} },
-    { ClkStatusText,        0,              Button2,        spawn,          SHCMD("kitty") },
+    { ClkStatusText,        0,              Button1,        sigstatusbar,   {.i = 1} },
+    { ClkStatusText,        0,              Button2,        sigstatusbar,   {.i = 2} },
+    { ClkStatusText,        0,              Button3,        sigstatusbar,   {.i = 3} },
 
     /* Keep movemouse? */
     /* { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} }, */
